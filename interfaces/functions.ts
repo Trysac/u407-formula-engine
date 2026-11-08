@@ -1,4 +1,4 @@
-import type { CellError, CellValue } from "./types";
+import type { CellError, CellValue } from "./types.js";
 
 export interface FunctionContext {
   readonly excel1900LeapBug?: boolean;

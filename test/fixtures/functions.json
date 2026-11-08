@@ -1,0 +1,157 @@
+[
+  { "function": "SUM", "args": [1, 2, 3], "expected": 6 },
+  { "function": "SUM", "args": [[1, 2], [3, 4]], "expected": 10 },
+  { "function": "SUM", "args": [-5, 10, -3], "expected": 2 },
+
+  { "function": "AVERAGE", "args": [2, 4, 6], "expected": 4 },
+  { "function": "AVERAGE", "args": [[10, 20], [30, 40]], "expected": 25 },
+  { "function": "AVERAGE", "args": [100], "expected": 100 },
+
+  { "function": "MIN", "args": [5, 2, 8, 1], "expected": 1 },
+  { "function": "MIN", "args": [[-10, 20], [-50, 4]], "expected": -50 },
+  { "function": "MIN", "args": [42], "expected": 42 },
+
+  { "function": "MAX", "args": [5, 2, 8, 1], "expected": 8 },
+  { "function": "MAX", "args": [[-10, 20], [-50, 4]], "expected": 20 },
+  { "function": "MAX", "args": [42], "expected": 42 },
+
+  { "function": "ABS", "args": [-15], "expected": 15 },
+  { "function": "ABS", "args": [23.5], "expected": 23.5 },
+  { "function": "ABS", "args": [0], "expected": 0 },
+
+  { "function": "ROUND", "args": [3.14159, 2], "expected": 3.14 },
+  { "function": "ROUND", "args": [123.456, 0], "expected": 123 },
+  { "function": "ROUND", "args": [55.5, -1], "expected": 60 },
+
+  { "function": "SQRT", "args": [16], "expected": 4 },
+  { "function": "SQRT", "args": [2], "expected": 1.41421356237 },
+  { "function": "SQRT", "args": [0], "expected": 0 },
+
+  { "function": "POWER", "args": [2, 3], "expected": 8 },
+  { "function": "POWER", "args": [9, 0.5], "expected": 3 },
+  { "function": "POWER", "args": [5, 0], "expected": 1 },
+
+  { "function": "MOD", "args": [10, 3], "expected": 1 },
+  { "function": "MOD", "args": [-10, 3], "expected": 2 },
+  { "function": "MOD", "args": [7, 7], "expected": 0 },
+
+  { "function": "IF", "args": [true, "yes", "no"], "expected": "yes" },
+  { "function": "IF", "args": [false, "yes", "no"], "expected": "no" },
+  { "function": "IF", "args": [1, 100, 200], "expected": 100 },
+
+  { "function": "IFERROR", "args": ["#DIV/0!", 99], "expected": 99 },
+  { "function": "IFERROR", "args": [42, 99], "expected": 42 },
+  { "function": "IFERROR", "args": ["#N/A", "fallback"], "expected": "fallback" },
+
+  { "function": "AND", "args": [true, true, true], "expected": true },
+  { "function": "AND", "args": [true, false, true], "expected": false },
+  { "function": "AND", "args": [1, 1, 0], "expected": false },
+
+  { "function": "OR", "args": [false, true, false], "expected": true },
+  { "function": "OR", "args": [false, false, false], "expected": false },
+  { "function": "OR", "args": [1, 0, 0], "expected": true },
+
+  { "function": "NOT", "args": [true], "expected": false },
+  { "function": "NOT", "args": [false], "expected": true },
+  { "function": "NOT", "args": [0], "expected": true },
+
+  { "function": "CONCAT", "args": ["Hello", " ", "World"], "expected": "Hello World" },
+  { "function": "CONCAT", "args": ["A", 1, "B"], "expected": "A1B" },
+  { "function": "CONCAT", "args": [["Foo", "Bar"], "Baz"], "expected": "FooBarBaz" },
+
+  { "function": "UPPER", "args": ["hello"], "expected": "HELLO" },
+  { "function": "UPPER", "args": ["Formula 1"], "expected": "FORMULA 1" },
+  { "function": "UPPER", "args": [""], "expected": "" },
+
+  { "function": "LOWER", "args": ["HELLO"], "expected": "hello" },
+  { "function": "LOWER", "args": ["Mixed CASE"], "expected": "mixed case" },
+  { "function": "LOWER", "args": [""], "expected": "" },
+
+  { "function": "LEN", "args": ["Hello"], "expected": 5 },
+  { "function": "LEN", "args": [""], "expected": 0 },
+  { "function": "LEN", "args": [12345], "expected": 5 },
+
+  { "function": "TRIM", "args": ["   hello   world   "], "expected": "hello world" },
+  { "function": "TRIM", "args": ["test"], "expected": "test" },
+  { "function": "TRIM", "args": ["  "], "expected": "" },
+
+  { "function": "LEFT", "args": ["Formula", 4], "expected": "Form" },
+  { "function": "LEFT", "args": ["Test"], "expected": "T" },
+  { "function": "LEFT", "args": ["Sample", 0], "expected": "" },
+
+  { "function": "RIGHT", "args": ["Formula", 4], "expected": "mula" },
+  { "function": "RIGHT", "args": ["Test"], "expected": "t" },
+  { "function": "RIGHT", "args": ["Sample", 0], "expected": "" },
+
+  { "function": "MID", "args": ["Formula", 4, 3], "expected": "mul" },
+  { "function": "MID", "args": ["Formula", 1, 1], "expected": "F" },
+  { "function": "MID", "args": ["Formula", 10, 2], "expected": "" },
+
+  {
+    "function": "VLOOKUP",
+    "args": ["b", [["a", 10], ["b", 20], ["c", 30]], 2, false],
+    "expected": 20
+  },
+  {
+    "function": "VLOOKUP",
+    "args": [25, [[10, "Low"], [20, "Med"], [30, "High"]], 2, true],
+    "expected": "Med"
+  },
+  { "function": "VLOOKUP", "args": ["z", [["a", 1], ["b", 2]], 2, false], "expected": "#N/A" },
+
+  {
+    "function": "HLOOKUP",
+    "args": ["b", [["a", "b", "c"], [10, 20, 30]], 2, false],
+    "expected": 20
+  },
+  {
+    "function": "HLOOKUP",
+    "args": [25, [[10, 20, 30], ["Low", "Med", "High"]], 2, true],
+    "expected": "Med"
+  },
+  { "function": "HLOOKUP", "args": ["z", [["a", "b"], [1, 2]], 2, false], "expected": "#N/A" },
+
+  { "function": "INDEX", "args": [[[1, 2], [3, 4]], 2, 1], "expected": 3 },
+  { "function": "INDEX", "args": [[[10, 20], [30, 40]], 1, 2], "expected": 20 },
+  { "function": "INDEX", "args": [[[1, 2]], 1, 1], "expected": 1 },
+
+  { "function": "MATCH", "args": ["b", ["a", "b", "c"], 0], "expected": 2 },
+  { "function": "MATCH", "args": [25, [10, 20, 30], 1], "expected": 2 },
+  { "function": "MATCH", "args": [25, [30, 20, 10], -1], "expected": 1 },
+
+  { "function": "DATE", "args": [1900, 1, 1], "expected": 1 },
+  { "function": "DATE", "args": [1900, 2, 29], "expected": 60 },
+  { "function": "DATE", "args": [2024, 1, 1], "expected": 45292 },
+
+  { "function": "YEAR", "args": [1], "expected": 1900 },
+  { "function": "YEAR", "args": [60], "expected": 1900 },
+  { "function": "YEAR", "args": [45292], "expected": 2024 },
+
+  { "function": "MONTH", "args": [1], "expected": 1 },
+  { "function": "MONTH", "args": [60], "expected": 2 },
+  { "function": "MONTH", "args": [45292], "expected": 1 },
+
+  { "function": "DAY", "args": [1], "expected": 1 },
+  { "function": "DAY", "args": [60], "expected": 29 },
+  { "function": "DAY", "args": [45292], "expected": 1 },
+
+  { "function": "PMT", "args": [0.004166666666666667, 60, -10000], "expected": 188.7121655 },
+  { "function": "PMT", "args": [0, 10, -1000], "expected": 100 },
+  { "function": "PMT", "args": [0.05, 1, -100, 0, 1], "expected": 100 },
+
+  { "function": "PV", "args": [0.05, 5, -100], "expected": 432.947667 },
+  { "function": "PV", "args": [0, 5, -100], "expected": 500 },
+  { "function": "PV", "args": [0.05, 5, -100, 0, 1], "expected": 454.59505 },
+
+  { "function": "FV", "args": [0.05, 5, -100], "expected": 552.563125 },
+  { "function": "FV", "args": [0, 5, -100], "expected": 500 },
+  { "function": "FV", "args": [0.05, 5, -100, 0, 1], "expected": 580.19128 },
+
+  { "function": "NPER", "args": [0.05, -100, 432.947667], "expected": 5 },
+  { "function": "NPER", "args": [0, -100, 500], "expected": 5 },
+  { "function": "NPER", "args": [0.05, -100, 454.59505, 0, 1], "expected": 5 },
+
+  { "function": "NPV", "args": [0.1, [-1000, 300, 420, 680]], "expected": 118.844341 },
+  { "function": "NPV", "args": [0.05, 100, 100], "expected": 185.941043 },
+  { "function": "NPV", "args": [0, 100, 200, 300], "expected": 600 }
+]
