@@ -1,0 +1,57 @@
+{
+  "name": "@trysac/formula-engine",
+  "version": "0.0.0",
+  "description": "Zero-dependency spreadsheet formula engine in TypeScript with A1 reference parsing, incremental recalculation via dependency DAG, and cycle detection.",
+  "license": "MIT",
+  "author": "Miguel Gomez",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Trysac/u407-formula-engine.git"
+  },
+  "homepage": "https://github.com/Trysac/u407-formula-engine#readme",
+  "bugs": {
+    "url": "https://github.com/Trysac/u407-formula-engine/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "biome ci .",
+    "format": "biome format --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --coverage",
+    "check": "node scripts/check.mjs",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.4",
+    "@trysac/data-grid-lite": "github:Trysac/u170-data-grid-lite#v0.1.0",
+    "@types/node": "^26.6.6",
+    "@vitest/coverage-v8": "^5.0.5",
+    "eslint": "10.14.0",
+    "eslint-plugin-security": "4.2.1",
+    "fast-check": "^4.10.2",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  },
+  "optionalDependencies": {
+    "@trysac/money-decimal": "github:Trysac/u054-money-decimal#v0.1.0"
+  }
+}
