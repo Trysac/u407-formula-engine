@@ -58,3 +58,13 @@ Total: $0.5823. Prices: Anthropic list prices.
 | audit | gemini-3.1-flash-lite | no | 0 | 0 | 0 | 0 | 0.0000 |
 
 Total: $0.6007. Prices: Anthropic list prices.
+
+## Factory run formula-engine-graph (measured from API usage)
+
+| Phase | Model | Batch | Input | Output | Cache write | Cache read | Cost (USD) |
+|---|---|---|---|---|---|---|---|
+| generation | gemini-3.8-flash | yes | 9700 | 44334 | 0 | 0 | 0.0868 |
+| audit | gemini-3.1-flash-lite | no | 33717 | 616 | 0 | 79300 | 0.0113 |
+| fix-1 | gemini-3.8-flash | no | 96263 | 1916 | 0 | 1062577 | 0.1591 |
+
+Total: $0.2572. Prices: Anthropic list prices.
