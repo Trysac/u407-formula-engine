@@ -1,0 +1,164 @@
+{
+  "schema": "modules.v1",
+  "project": "formula-engine",
+  "lang": "typescript",
+  "interfaces": [
+    {
+      "path": "interfaces/types.ts",
+      "content": "/**\n * Primitive cell values supported by the spreadsheet engine.\n */\nexport type CellValue = number | string | boolean | null;\n\n/**\n * Standard spreadsheet error literal strings.\n */\nexport type CellError = \"#DIV/0!\" | \"#N/A\" | \"#REF!\" | \"#VALUE!\" | \"#NAME?\" | \"#NUM!\" | \"#CIRC!\";\n\n/**\n * Error codes thrown by parser and evaluation limits.\n */\nexport type FormulaErrorCode =\n  | \"FORMULA_TOO_LONG\"\n  | \"EXPRESSION_TOO_DEEP\"\n  | \"CELL_LIMIT_EXCEEDED\"\n  | \"SYNTAX_ERROR\"\n  | \"CIRCULAR_REFERENCE\"\n  | \"UNKNOWN_FUNCTION\";\n\n/**\n * Custom error class for formula parsing and execution errors.\n */\nexport declare class FormulaError extends Error {\n  readonly code: FormulaErrorCode;\n  constructor(code: FormulaErrorCode, message?: string);\n}\n\n/**\n * Coordinate representing a single cell location.\n */\nexport interface CellCoord {\n  readonly sheet?: string;\n  readonly row: number;\n  readonly col: number;\n  readonly rowAbsolute?: boolean;\n  readonly colAbsolute?: boolean;\n}\n\n/**\n * Rectangular range of cells.\n */\nexport interface CellRange {\n  readonly sheet?: string;\n  readonly start: CellCoord;\n  readonly end: CellCoord;\n}\n",
+      "sha256": "b64445a6da2e89dc784f3b6b77b7885e68f696af21560f336efddabccb6bb1d9"
+    },
+    {
+      "path": "interfaces/parser.ts",
+      "content": "import type { CellCoord, CellRange, CellValue } from \"./types\";\n\nexport type ASTNodeType =\n  | \"Literal\"\n  | \"Reference\"\n  | \"Range\"\n  | \"UnaryExpression\"\n  | \"BinaryExpression\"\n  | \"FunctionCall\";\n\nexport interface ASTNodeBase {\n  readonly type: ASTNodeType;\n}\n\nexport interface LiteralNode extends ASTNodeBase {\n  readonly type: \"Literal\";\n  readonly value: CellValue;\n}\n\nexport interface ReferenceNode extends ASTNodeBase {\n  readonly type: \"Reference\";\n  readonly coord: CellCoord;\n  readonly raw: string;\n}\n\nexport interface RangeNode extends ASTNodeBase {\n  readonly type: \"Range\";\n  readonly range: CellRange;\n  readonly raw: string;\n}\n\nexport interface UnaryExpressionNode extends ASTNodeBase {\n  readonly type: \"UnaryExpression\";\n  readonly operator: \"+\" | \"-\";\n  readonly argument: ASTNode;\n}\n\nexport interface BinaryExpressionNode extends ASTNodeBase {\n  readonly type: \"BinaryExpression\";\n  readonly operator: \"+\" | \"-\" | \"*\" | \"/\" | \"^\" | \"%\" | \"&\" | \"=\" | \"<>\" | \"<\" | \"<=\" | \">\" | \">=\";\n  readonly left: ASTNode;\n  readonly right: ASTNode;\n}\n\nexport interface FunctionCallNode extends ASTNodeBase {\n  readonly type: \"FunctionCall\";\n  readonly name: string;\n  readonly arguments: ASTNode[];\n}\n\nexport type ASTNode =\n  | LiteralNode\n  | ReferenceNode\n  | RangeNode\n  | UnaryExpressionNode\n  | BinaryExpressionNode\n  | FunctionCallNode;\n\nexport interface ParserOptions {\n  maxFormulaLength?: number;\n  maxExpressionDepth?: number;\n}\n\nexport declare function parseFormula(formula: string, options?: ParserOptions): ASTNode;\nexport declare function parseCellReference(ref: string): CellCoord;\nexport declare function parseRangeReference(rangeRef: string): CellRange;\nexport declare function formatCellReference(coord: CellCoord): string;\nexport declare function extractReferences(ast: ASTNode): string[];\n",
+      "sha256": "790f4c274b3c787d60df574d41df97b328f5a364df9cfa93412cb11a4e062b42"
+    },
+    {
+      "path": "interfaces/functions.ts",
+      "content": "import type { CellError, CellValue } from \"./types\";\n\nexport interface FunctionContext {\n  readonly excel1900LeapBug?: boolean;\n  getCellValue(ref: string): CellValue | CellError;\n  getRangeValues(rangeRef: string): (CellValue | CellError)[][];\n}\n\nexport type FunctionImplementation = (\n  args: any[],\n  context: FunctionContext,\n) => CellValue | CellError;\n\nexport interface IFunctionRegistry {\n  register(name: string, fn: FunctionImplementation): void;\n  get(name: string): FunctionImplementation | undefined;\n  has(name: string): boolean;\n  names(): string[];\n}\n\nexport declare function createDefaultFunctionRegistry(): IFunctionRegistry;\nexport declare function evaluateFunction(\n  name: string,\n  args: any[],\n  context: FunctionContext,\n  registry?: IFunctionRegistry,\n): CellValue | CellError;\n",
+      "sha256": "47f6b2f6570114447f53eab12dd740aaa50950fa59d4f19322491e1b1ddb48cb"
+    },
+    {
+      "path": "interfaces/graph.ts",
+      "content": "export interface RecalculationPlan {\n  readonly order: string[];\n  readonly cycleCells: string[];\n}\n\nexport interface IDependencyGraph {\n  addCell(cell: string): void;\n  removeCell(cell: string): void;\n  setDependencies(cell: string, dependencies: string[]): void;\n  getDependencies(cell: string): string[];\n  getDependents(cell: string): string[];\n  detectCycle(startCell: string): string[] | null;\n  getEvaluationOrder(dirtyCells: string[]): RecalculationPlan;\n  hasCell(cell: string): boolean;\n  clear(): void;\n}\n\nexport declare class DependencyGraph implements IDependencyGraph {\n  constructor();\n  addCell(cell: string): void;\n  removeCell(cell: string): void;\n  setDependencies(cell: string, dependencies: string[]): void;\n  getDependencies(cell: string): string[];\n  getDependents(cell: string): string[];\n  detectCycle(startCell: string): string[] | null;\n  getEvaluationOrder(dirtyCells: string[]): RecalculationPlan;\n  hasCell(cell: string): boolean;\n  clear(): void;\n}\n",
+      "sha256": "20440004231e5f134be4cf7001585dbf613b860a69d978d3d2adb8b7f74d5201"
+    },
+    {
+      "path": "interfaces/workbook.ts",
+      "content": "import type { CellError, CellValue } from \"./types\";\n\nexport interface WorkbookOptions {\n  maxFormulaLength?: number;\n  maxExpressionDepth?: number;\n  maxCellCount?: number;\n  excel1900LeapBug?: boolean;\n}\n\nexport interface SetCellResult {\n  evaluated: string[];\n}\n\nexport interface RecalculateResult {\n  evaluatedCount: number;\n  dirtyCount: number;\n}\n\nexport interface IWorkbook {\n  setCell(ref: string, content: CellValue): SetCellResult;\n  getValue(ref: string): CellValue | CellError;\n  getDependents(ref: string): string[];\n  getCycle(ref: string): string[] | null;\n  recalculate(dirtyCells?: string[]): RecalculateResult;\n  registerFunction(name: string, fn: (...args: any[]) => CellValue): void;\n  toJSON(): Record<string, CellValue>;\n  loadJSON(data: Record<string, CellValue>): void;\n}\n\nexport declare class Workbook implements IWorkbook {\n  constructor(opts?: WorkbookOptions);\n  setCell(ref: string, content: CellValue): SetCellResult;\n  getValue(ref: string): CellValue | CellError;\n  getDependents(ref: string): string[];\n  getCycle(ref: string): string[] | null;\n  recalculate(dirtyCells?: string[]): RecalculateResult;\n  registerFunction(name: string, fn: (...args: any[]) => CellValue): void;\n  toJSON(): Record<string, CellValue>;\n  loadJSON(data: Record<string, CellValue>): void;\n}\n",
+      "sha256": "125898530d56762bc8f850f3c07b1d330555c3c1a4c3d85accf0b4af28ba1d48"
+    },
+    {
+      "path": "interfaces/cli.ts",
+      "content": "export interface CLIOutput {\n  stdout: { write(s: string): void };\n  stderr: { write(s: string): void };\n}\n\nexport declare function run(argv: string[], io: CLIOutput): Promise<number>;\n",
+      "sha256": "c6bc973274e210ece1d797361f707f550311e47a8caa220765370da7f28ba94d"
+    }
+  ],
+  "modules": [
+    {
+      "id": "parser",
+      "goal": "Implement A1 and sheet reference parsing, formula lexing, AST construction, input limit enforcement, and FormulaError exceptions.",
+      "acceptance": [
+        "IF formula string exceeds maxFormulaLength of 4096 characters THEN parseFormula raises FormulaError with code 'FORMULA_TOO_LONG'",
+        "IF formula nesting exceeds maxExpressionDepth of 64 levels THEN parseFormula raises FormulaError with code 'EXPRESSION_TOO_DEEP'",
+        "WHEN parsing formula '=SUM(Sheet1!$A$1:$B$2, 42)' THEN parseFormula returns AST with function name 'SUM' and reference 'Sheet1!$A$1:$B$2'",
+        "WHEN parsing cell coordinate '$C$10' THEN parseCellReference returns row 10 and col 3 with absolute row and column flags true"
+      ],
+      "owns": [
+        "src/parser/",
+        "test/parser/"
+      ],
+      "implements": [
+        "interfaces/types.ts",
+        "interfaces/parser.ts"
+      ],
+      "consumes": [],
+      "depends_on": []
+    },
+    {
+      "id": "functions",
+      "goal": "Implement the core spreadsheet built-in function library across Math, Logic, Text, Lookup, Date and Finance families, including serial dates and Excel 1900 leap bug.",
+      "acceptance": [
+        "WHEN the committed table test/fixtures/functions.json (at least 3 cases per implemented function) runs THEN every case matches, with floats compared at relative tolerance 1e-9",
+        "WHEN evaluating function 'PMT' with rate 0.05 / 12, nper 60, pv -10000 THEN evaluateFunction returns 188.7121655",
+        "WHEN evaluating function 'SUM' with array argument [[1, 2], [3, 4]] THEN evaluateFunction returns 10",
+        "WHEN evaluating function 'CONCAT' with arguments ['Hello', ' ', 'World'] THEN evaluateFunction returns 'Hello World'"
+      ],
+      "owns": [
+        "src/functions/",
+        "test/functions/",
+        "test/fixtures/"
+      ],
+      "implements": [
+        "interfaces/functions.ts"
+      ],
+      "consumes": [
+        "interfaces/types.ts",
+        "interfaces/parser.ts"
+      ],
+      "depends_on": [
+        "parser"
+      ]
+    },
+    {
+      "id": "graph",
+      "goal": "Implement the dependency DAG for cell references, incremental dirty node propagation, topological order calculation, and Tarjan or DFS cycle detection.",
+      "acceptance": [
+        "WHEN a circular dependency edge 'A1' -> 'B1' and 'B1' -> 'A1' is added THEN graph.detectCycle('A1') returns ['A1', 'B1']",
+        "WHEN 'B1' changes in graph where 'A1' depends on 'B1' and 'C1' is independent THEN graph.getEvaluationOrder(['B1']) returns order ['A1']",
+        "WHEN diamond dependency graph A1->B1, A1->C1, B1->D1, C1->D1 is invalidated from 'D1' THEN graph.getEvaluationOrder(['D1']) returns ['B1', 'C1', 'A1'] with each node evaluated exactly once"
+      ],
+      "owns": [
+        "src/graph/",
+        "test/graph/"
+      ],
+      "implements": [
+        "interfaces/graph.ts"
+      ],
+      "consumes": [
+        "interfaces/types.ts"
+      ],
+      "depends_on": [
+        "parser"
+      ]
+    },
+    {
+      "id": "workbook",
+      "goal": "Implement the public Workbook class orchestrating cell storage, incremental recalculation, cycle isolation, formula evaluation, custom function registration, and JSON serialization.",
+      "acceptance": [
+        "WHEN a cell is set with '=SUM(B1:B3)' and cells 'B1', 'B2', 'B3' contain 10, 20, 30 THEN wb.getValue('A1') returns 60",
+        "WHEN a circular dependency is created with 'A1' set to '=B1+1' and 'B1' set to '=A1+1' THEN wb.getValue('A1') returns '#CIRC!' and wb.getCycle('A1') returns ['A1', 'B1']",
+        "WHEN 'B1' changes from 10 to 40 in a workbook where 'A1' is '=B1*2' and 'C1' is '=5+5' THEN wb.setCell('B1', 40) returns { evaluated: ['A1'] } and wb.getValue('A1') returns 80",
+        "WHEN evaluating formula '=IFERROR(1/0, 99)' THEN wb.getValue('A1') returns 99",
+        "WHEN evaluating '=DATE(1900, 2, 29)' with excel1900LeapBug enabled THEN wb.getValue('A1') returns serial number 60",
+        "WHEN evaluating formula '=INDEX(A1:B2, 2, 1)' where range 'A1:B2' contains [[1, 2], [3, 4]] THEN wb.getValue('C1') returns 3",
+        "WHEN 200 seeded property sequences of random edits run THEN every cell value after incremental recalculation equals a full recalculation of a fresh workbook loaded from wb.toJSON()",
+        "WHEN registering custom function 'DOUBLE' as (x: number) => x * 2 THEN evaluating '=DOUBLE(21)' returns 42"
+      ],
+      "owns": [
+        "src/workbook/",
+        "test/workbook/"
+      ],
+      "implements": [
+        "interfaces/workbook.ts"
+      ],
+      "consumes": [
+        "interfaces/types.ts",
+        "interfaces/parser.ts",
+        "interfaces/functions.ts",
+        "interfaces/graph.ts"
+      ],
+      "depends_on": [
+        "parser",
+        "functions",
+        "graph"
+      ]
+    },
+    {
+      "id": "cli",
+      "goal": "Implement the command line runner for headless formula evaluation and the CI conformance test setup and harness comparing against LibreOffice headless.",
+      "acceptance": [
+        "WHEN the CI conformance job evaluates 20000 random typed formulas in this engine and in LibreOffice headless THEN at least 99 percent of values match at relative tolerance 1e-9",
+        "WHEN running CLI with arguments ['--eval', '=SUM(1, 2, 3)'] THEN run exits with code 0 and writes '6\n' to stdout",
+        "WHEN running CLI with invalid syntax arguments ['--eval', '=(1+'] THEN run exits with code 1 and writes 'SYNTAX_ERROR' to stderr"
+      ],
+      "owns": [
+        "src/cli/",
+        "test/cli/",
+        "ci/",
+        "test/conformance/"
+      ],
+      "implements": [
+        "interfaces/cli.ts"
+      ],
+      "consumes": [
+        "interfaces/types.ts",
+        "interfaces/workbook.ts"
+      ],
+      "depends_on": [
+        "parser",
+        "workbook"
+      ]
+    }
+  ]
+}
