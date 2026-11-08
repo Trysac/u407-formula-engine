@@ -45,3 +45,16 @@ Measured values only. Leave "pending measurement" until a real figure is recorde
 | fix-2 | gemini-3.8-flash | no | 63078 | 3239 | 0 | 467470 | 0.0945 |
 
 Total: $0.5823. Prices: Anthropic list prices.
+
+## Factory run formula-engine-functions (measured from API usage)
+
+| Phase | Model | Batch | Input | Output | Cache write | Cache read | Cost (USD) |
+|---|---|---|---|---|---|---|---|
+| generation | gemini-3.8-flash | yes | 10136 | 17093 | 0 | 0 | 0.0358 |
+| fix-1 | gemini-3.8-flash | no | 62488 | 1915 | 0 | 347804 | 0.0801 |
+| fix-2 | gemini-3.8-flash | no | 112004 | 22394 | 0 | 1423147 | 0.2747 |
+| fix-3 | gemini-3.8-flash | no | 79151 | 309 | 0 | 470816 | 0.0958 |
+| fix-4 | gemini-3.8-flash | no | 79613 | 776 | 0 | 687328 | 0.1142 |
+| audit | gemini-3.1-flash-lite | no | 0 | 0 | 0 | 0 | 0.0000 |
+
+Total: $0.6007. Prices: Anthropic list prices.
