@@ -9,4 +9,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- feat(parser): implement A1/sheet reference parsing, formula AST parser with depth/length limits, and FormulaError
 - Initial project structure from the factory utility template.

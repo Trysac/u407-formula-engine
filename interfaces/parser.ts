@@ -1,4 +1,4 @@
-import type { CellCoord, CellRange, CellValue } from "./types";
+import type { CellCoord, CellRange, CellValue } from "./types.js";
 
 export type ASTNodeType =
   | "Literal"

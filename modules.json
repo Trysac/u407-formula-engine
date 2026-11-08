@@ -10,13 +10,13 @@
     },
     {
       "path": "interfaces/parser.ts",
-      "content": "import type { CellCoord, CellRange, CellValue } from \"./types\";\n\nexport type ASTNodeType =\n  | \"Literal\"\n  | \"Reference\"\n  | \"Range\"\n  | \"UnaryExpression\"\n  | \"BinaryExpression\"\n  | \"FunctionCall\";\n\nexport interface ASTNodeBase {\n  readonly type: ASTNodeType;\n}\n\nexport interface LiteralNode extends ASTNodeBase {\n  readonly type: \"Literal\";\n  readonly value: CellValue;\n}\n\nexport interface ReferenceNode extends ASTNodeBase {\n  readonly type: \"Reference\";\n  readonly coord: CellCoord;\n  readonly raw: string;\n}\n\nexport interface RangeNode extends ASTNodeBase {\n  readonly type: \"Range\";\n  readonly range: CellRange;\n  readonly raw: string;\n}\n\nexport interface UnaryExpressionNode extends ASTNodeBase {\n  readonly type: \"UnaryExpression\";\n  readonly operator: \"+\" | \"-\";\n  readonly argument: ASTNode;\n}\n\nexport interface BinaryExpressionNode extends ASTNodeBase {\n  readonly type: \"BinaryExpression\";\n  readonly operator: \"+\" | \"-\" | \"*\" | \"/\" | \"^\" | \"%\" | \"&\" | \"=\" | \"<>\" | \"<\" | \"<=\" | \">\" | \">=\";\n  readonly left: ASTNode;\n  readonly right: ASTNode;\n}\n\nexport interface FunctionCallNode extends ASTNodeBase {\n  readonly type: \"FunctionCall\";\n  readonly name: string;\n  readonly arguments: ASTNode[];\n}\n\nexport type ASTNode =\n  | LiteralNode\n  | ReferenceNode\n  | RangeNode\n  | UnaryExpressionNode\n  | BinaryExpressionNode\n  | FunctionCallNode;\n\nexport interface ParserOptions {\n  maxFormulaLength?: number;\n  maxExpressionDepth?: number;\n}\n\nexport declare function parseFormula(formula: string, options?: ParserOptions): ASTNode;\nexport declare function parseCellReference(ref: string): CellCoord;\nexport declare function parseRangeReference(rangeRef: string): CellRange;\nexport declare function formatCellReference(coord: CellCoord): string;\nexport declare function extractReferences(ast: ASTNode): string[];\n",
-      "sha256": "790f4c274b3c787d60df574d41df97b328f5a364df9cfa93412cb11a4e062b42"
+      "content": "import type { CellCoord, CellRange, CellValue } from \"./types.js\";\n\nexport type ASTNodeType =\n  | \"Literal\"\n  | \"Reference\"\n  | \"Range\"\n  | \"UnaryExpression\"\n  | \"BinaryExpression\"\n  | \"FunctionCall\";\n\nexport interface ASTNodeBase {\n  readonly type: ASTNodeType;\n}\n\nexport interface LiteralNode extends ASTNodeBase {\n  readonly type: \"Literal\";\n  readonly value: CellValue;\n}\n\nexport interface ReferenceNode extends ASTNodeBase {\n  readonly type: \"Reference\";\n  readonly coord: CellCoord;\n  readonly raw: string;\n}\n\nexport interface RangeNode extends ASTNodeBase {\n  readonly type: \"Range\";\n  readonly range: CellRange;\n  readonly raw: string;\n}\n\nexport interface UnaryExpressionNode extends ASTNodeBase {\n  readonly type: \"UnaryExpression\";\n  readonly operator: \"+\" | \"-\";\n  readonly argument: ASTNode;\n}\n\nexport interface BinaryExpressionNode extends ASTNodeBase {\n  readonly type: \"BinaryExpression\";\n  readonly operator: \"+\" | \"-\" | \"*\" | \"/\" | \"^\" | \"%\" | \"&\" | \"=\" | \"<>\" | \"<\" | \"<=\" | \">\" | \">=\";\n  readonly left: ASTNode;\n  readonly right: ASTNode;\n}\n\nexport interface FunctionCallNode extends ASTNodeBase {\n  readonly type: \"FunctionCall\";\n  readonly name: string;\n  readonly arguments: ASTNode[];\n}\n\nexport type ASTNode =\n  | LiteralNode\n  | ReferenceNode\n  | RangeNode\n  | UnaryExpressionNode\n  | BinaryExpressionNode\n  | FunctionCallNode;\n\nexport interface ParserOptions {\n  maxFormulaLength?: number;\n  maxExpressionDepth?: number;\n}\n\nexport declare function parseFormula(formula: string, options?: ParserOptions): ASTNode;\nexport declare function parseCellReference(ref: string): CellCoord;\nexport declare function parseRangeReference(rangeRef: string): CellRange;\nexport declare function formatCellReference(coord: CellCoord): string;\nexport declare function extractReferences(ast: ASTNode): string[];\n",
+      "sha256": "f8fa1fa2ce57aa0a820b2cfb9c35408c6750e074cef6d0301e5f6e9385526bfc"
     },
     {
       "path": "interfaces/functions.ts",
-      "content": "import type { CellError, CellValue } from \"./types\";\n\nexport interface FunctionContext {\n  readonly excel1900LeapBug?: boolean;\n  getCellValue(ref: string): CellValue | CellError;\n  getRangeValues(rangeRef: string): (CellValue | CellError)[][];\n}\n\nexport type FunctionImplementation = (\n  args: any[],\n  context: FunctionContext,\n) => CellValue | CellError;\n\nexport interface IFunctionRegistry {\n  register(name: string, fn: FunctionImplementation): void;\n  get(name: string): FunctionImplementation | undefined;\n  has(name: string): boolean;\n  names(): string[];\n}\n\nexport declare function createDefaultFunctionRegistry(): IFunctionRegistry;\nexport declare function evaluateFunction(\n  name: string,\n  args: any[],\n  context: FunctionContext,\n  registry?: IFunctionRegistry,\n): CellValue | CellError;\n",
-      "sha256": "47f6b2f6570114447f53eab12dd740aaa50950fa59d4f19322491e1b1ddb48cb"
+      "content": "import type { CellError, CellValue } from \"./types.js\";\n\nexport interface FunctionContext {\n  readonly excel1900LeapBug?: boolean;\n  getCellValue(ref: string): CellValue | CellError;\n  getRangeValues(rangeRef: string): (CellValue | CellError)[][];\n}\n\nexport type FunctionImplementation = (\n  args: any[],\n  context: FunctionContext,\n) => CellValue | CellError;\n\nexport interface IFunctionRegistry {\n  register(name: string, fn: FunctionImplementation): void;\n  get(name: string): FunctionImplementation | undefined;\n  has(name: string): boolean;\n  names(): string[];\n}\n\nexport declare function createDefaultFunctionRegistry(): IFunctionRegistry;\nexport declare function evaluateFunction(\n  name: string,\n  args: any[],\n  context: FunctionContext,\n  registry?: IFunctionRegistry,\n): CellValue | CellError;\n",
+      "sha256": "ee23a16cd52bf04a7ccf8c0cf68757e89b810b6216146243ca9730662da1d083"
     },
     {
       "path": "interfaces/graph.ts",
@@ -25,8 +25,8 @@
     },
     {
       "path": "interfaces/workbook.ts",
-      "content": "import type { CellError, CellValue } from \"./types\";\n\nexport interface WorkbookOptions {\n  maxFormulaLength?: number;\n  maxExpressionDepth?: number;\n  maxCellCount?: number;\n  excel1900LeapBug?: boolean;\n}\n\nexport interface SetCellResult {\n  evaluated: string[];\n}\n\nexport interface RecalculateResult {\n  evaluatedCount: number;\n  dirtyCount: number;\n}\n\nexport interface IWorkbook {\n  setCell(ref: string, content: CellValue): SetCellResult;\n  getValue(ref: string): CellValue | CellError;\n  getDependents(ref: string): string[];\n  getCycle(ref: string): string[] | null;\n  recalculate(dirtyCells?: string[]): RecalculateResult;\n  registerFunction(name: string, fn: (...args: any[]) => CellValue): void;\n  toJSON(): Record<string, CellValue>;\n  loadJSON(data: Record<string, CellValue>): void;\n}\n\nexport declare class Workbook implements IWorkbook {\n  constructor(opts?: WorkbookOptions);\n  setCell(ref: string, content: CellValue): SetCellResult;\n  getValue(ref: string): CellValue | CellError;\n  getDependents(ref: string): string[];\n  getCycle(ref: string): string[] | null;\n  recalculate(dirtyCells?: string[]): RecalculateResult;\n  registerFunction(name: string, fn: (...args: any[]) => CellValue): void;\n  toJSON(): Record<string, CellValue>;\n  loadJSON(data: Record<string, CellValue>): void;\n}\n",
-      "sha256": "125898530d56762bc8f850f3c07b1d330555c3c1a4c3d85accf0b4af28ba1d48"
+      "content": "import type { CellError, CellValue } from \"./types.js\";\n\nexport interface WorkbookOptions {\n  maxFormulaLength?: number;\n  maxExpressionDepth?: number;\n  maxCellCount?: number;\n  excel1900LeapBug?: boolean;\n}\n\nexport interface SetCellResult {\n  evaluated: string[];\n}\n\nexport interface RecalculateResult {\n  evaluatedCount: number;\n  dirtyCount: number;\n}\n\nexport interface IWorkbook {\n  setCell(ref: string, content: CellValue): SetCellResult;\n  getValue(ref: string): CellValue | CellError;\n  getDependents(ref: string): string[];\n  getCycle(ref: string): string[] | null;\n  recalculate(dirtyCells?: string[]): RecalculateResult;\n  registerFunction(name: string, fn: (...args: any[]) => CellValue): void;\n  toJSON(): Record<string, CellValue>;\n  loadJSON(data: Record<string, CellValue>): void;\n}\n\nexport declare class Workbook implements IWorkbook {\n  constructor(opts?: WorkbookOptions);\n  setCell(ref: string, content: CellValue): SetCellResult;\n  getValue(ref: string): CellValue | CellError;\n  getDependents(ref: string): string[];\n  getCycle(ref: string): string[] | null;\n  recalculate(dirtyCells?: string[]): RecalculateResult;\n  registerFunction(name: string, fn: (...args: any[]) => CellValue): void;\n  toJSON(): Record<string, CellValue>;\n  loadJSON(data: Record<string, CellValue>): void;\n}\n",
+      "sha256": "034c491a17bcc3f71019dbe2cac077ca050ce8c6712cd99104fea654e89eba79"
     },
     {
       "path": "interfaces/cli.ts",
@@ -44,14 +44,8 @@
         "WHEN parsing formula '=SUM(Sheet1!$A$1:$B$2, 42)' THEN parseFormula returns AST with function name 'SUM' and reference 'Sheet1!$A$1:$B$2'",
         "WHEN parsing cell coordinate '$C$10' THEN parseCellReference returns row 10 and col 3 with absolute row and column flags true"
       ],
-      "owns": [
-        "src/parser/",
-        "test/parser/"
-      ],
-      "implements": [
-        "interfaces/types.ts",
-        "interfaces/parser.ts"
-      ],
+      "owns": ["src/parser/", "test/parser/"],
+      "implements": ["interfaces/types.ts", "interfaces/parser.ts"],
       "consumes": [],
       "depends_on": []
     },
@@ -64,21 +58,10 @@
         "WHEN evaluating function 'SUM' with array argument [[1, 2], [3, 4]] THEN evaluateFunction returns 10",
         "WHEN evaluating function 'CONCAT' with arguments ['Hello', ' ', 'World'] THEN evaluateFunction returns 'Hello World'"
       ],
-      "owns": [
-        "src/functions/",
-        "test/functions/",
-        "test/fixtures/"
-      ],
-      "implements": [
-        "interfaces/functions.ts"
-      ],
-      "consumes": [
-        "interfaces/types.ts",
-        "interfaces/parser.ts"
-      ],
-      "depends_on": [
-        "parser"
-      ]
+      "owns": ["src/functions/", "test/functions/", "test/fixtures/"],
+      "implements": ["interfaces/functions.ts"],
+      "consumes": ["interfaces/types.ts", "interfaces/parser.ts"],
+      "depends_on": ["parser"]
     },
     {
       "id": "graph",
@@ -88,19 +71,10 @@
         "WHEN 'B1' changes in graph where 'A1' depends on 'B1' and 'C1' is independent THEN graph.getEvaluationOrder(['B1']) returns order ['A1']",
         "WHEN diamond dependency graph A1->B1, A1->C1, B1->D1, C1->D1 is invalidated from 'D1' THEN graph.getEvaluationOrder(['D1']) returns ['B1', 'C1', 'A1'] with each node evaluated exactly once"
       ],
-      "owns": [
-        "src/graph/",
-        "test/graph/"
-      ],
-      "implements": [
-        "interfaces/graph.ts"
-      ],
-      "consumes": [
-        "interfaces/types.ts"
-      ],
-      "depends_on": [
-        "parser"
-      ]
+      "owns": ["src/graph/", "test/graph/"],
+      "implements": ["interfaces/graph.ts"],
+      "consumes": ["interfaces/types.ts"],
+      "depends_on": ["parser"]
     },
     {
       "id": "workbook",
@@ -115,24 +89,15 @@
         "WHEN 200 seeded property sequences of random edits run THEN every cell value after incremental recalculation equals a full recalculation of a fresh workbook loaded from wb.toJSON()",
         "WHEN registering custom function 'DOUBLE' as (x: number) => x * 2 THEN evaluating '=DOUBLE(21)' returns 42"
       ],
-      "owns": [
-        "src/workbook/",
-        "test/workbook/"
-      ],
-      "implements": [
-        "interfaces/workbook.ts"
-      ],
+      "owns": ["src/workbook/", "test/workbook/"],
+      "implements": ["interfaces/workbook.ts"],
       "consumes": [
         "interfaces/types.ts",
         "interfaces/parser.ts",
         "interfaces/functions.ts",
         "interfaces/graph.ts"
       ],
-      "depends_on": [
-        "parser",
-        "functions",
-        "graph"
-      ]
+      "depends_on": ["parser", "functions", "graph"]
     },
     {
       "id": "cli",
@@ -142,23 +107,10 @@
         "WHEN running CLI with arguments ['--eval', '=SUM(1, 2, 3)'] THEN run exits with code 0 and writes '6\n' to stdout",
         "WHEN running CLI with invalid syntax arguments ['--eval', '=(1+'] THEN run exits with code 1 and writes 'SYNTAX_ERROR' to stderr"
       ],
-      "owns": [
-        "src/cli/",
-        "test/cli/",
-        "ci/",
-        "test/conformance/"
-      ],
-      "implements": [
-        "interfaces/cli.ts"
-      ],
-      "consumes": [
-        "interfaces/types.ts",
-        "interfaces/workbook.ts"
-      ],
-      "depends_on": [
-        "parser",
-        "workbook"
-      ]
+      "owns": ["src/cli/", "test/cli/", "ci/", "test/conformance/"],
+      "implements": ["interfaces/cli.ts"],
+      "consumes": ["interfaces/types.ts", "interfaces/workbook.ts"],
+      "depends_on": ["parser", "workbook"]
     }
   ]
 }
