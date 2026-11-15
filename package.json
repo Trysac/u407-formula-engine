@@ -41,7 +41,7 @@
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.6.4",
+    "@biomejs/biome": "^2.6.7",
     "@trysac/data-grid-lite": "github:Trysac/u170-data-grid-lite#v0.1.0",
     "@types/node": "^26.6.6",
     "@vitest/coverage-v8": "^5.0.5",
