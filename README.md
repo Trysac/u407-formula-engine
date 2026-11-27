@@ -8,8 +8,14 @@ Zero-dependency spreadsheet formula engine in TypeScript with A1 reference parsi
 
 ## Problem
 
-Describe in two or three sentences the concrete problem this utility solves, who hits it, and why existing
-packages do not solve it well. Keep it factual; link to an issue or decision record when there is one.
+Applications that let users type spreadsheet-style formulas (`=SUM(A1:B3)`, `=IF(A1>0, A1, 0)`) need to parse them,
+track which cells depend on which, recompute only what changed, and stop on circular references. Pulling in a full
+spreadsheet library for this brings far more than formula evaluation. This project implements a zero-dependency
+formula engine in TypeScript: a recursive-descent parser with A1 reference and range parsing, a built-in function
+registry (math, logic, text, lookup, date and finance functions such as `SUM`, `IF`, `VLOOKUP`), and an in-memory
+`Workbook` that keeps a dependency DAG, recalculates affected cells in topological order, and marks cells on a cycle
+with `#CIRC!`. It is not a spreadsheet file reader or writer. The engine lives under `src/` and is not yet exported
+from the package entry point; see [API](#api).
 
 ## Install
 
