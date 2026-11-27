@@ -1,8 +1,24 @@
 /**
  * Public entry point of @trysac/formula-engine.
  *
- * Replace this placeholder with the utility's real API. Keep every export documented and covered by tests.
+ * `Workbook` holds cells addressed in A1 notation, parses formulas, tracks dependencies and
+ * recalculates only the cells affected by a change. Errors are Excel-style codes such as
+ * `#DIV/0!` and `#CIRC!`; `isCellError` tells them apart from values. Invalid formulas and
+ * exceeded limits throw `FormulaError` with a `code`.
  */
+
+export { FormulaError } from "./parser/types.js";
+export { isCellError } from "./workbook/evaluator.js";
+export { Workbook } from "./workbook/index.js";
+export type {
+  CellError,
+  CellValue,
+  FormulaErrorCode,
+  IWorkbook,
+  RecalculateResult,
+  SetCellResult,
+  WorkbookOptions,
+} from "./workbook/types.js";
 
 /**
  * Builds a greeting for `name`.

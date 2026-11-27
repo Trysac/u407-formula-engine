@@ -1,7 +1,6 @@
 # formula-engine
 
-[![npm version](https://img.shields.io/npm/v/@trysac/formula-engine.svg)](https://www.npmjs.com/package/@trysac/formula-engine)
-[![license: MIT](https://img.shields.io/npm/l/@trysac/formula-engine.svg)](LICENSE)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![CI](https://github.com/Trysac/u407-formula-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/Trysac/u407-formula-engine/actions/workflows/ci.yml)
 
 Zero-dependency spreadsheet formula engine in TypeScript with A1 reference parsing, incremental recalculation via dependency DAG, and cycle detection.
@@ -14,38 +13,63 @@ spreadsheet library for this brings far more than formula evaluation. This proje
 formula engine in TypeScript: a recursive-descent parser with A1 reference and range parsing, a built-in function
 registry (math, logic, text, lookup, date and finance functions such as `SUM`, `IF`, `VLOOKUP`), and an in-memory
 `Workbook` that keeps a dependency DAG, recalculates affected cells in topological order, and marks cells on a cycle
-with `#CIRC!`. It is not a spreadsheet file reader or writer. The engine lives under `src/` and is not yet exported
-from the package entry point; see [API](#api).
+with `#CIRC!`. It is not a spreadsheet file reader or writer.
 
 ## Install
 
+The package is not published to npm yet. Build it from a clone:
+
 ```sh
-npm install @trysac/formula-engine
+git clone https://github.com/Trysac/u407-formula-engine.git
+cd u407-formula-engine
+npm ci && npm run build
 ```
 
-Requires Node.js 20 or newer. The package ships ES modules with TypeScript declarations.
+Requires Node.js 22 or newer. The build emits ES modules with TypeScript declarations in `dist/`.
 
 ## Usage
 
 ```ts
-import { greet } from "@trysac/formula-engine";
+import { isCellError, Workbook } from "@trysac/formula-engine";
 
-// Build a greeting; surrounding whitespace is ignored.
-const message = greet("  Ada ");
-console.log(message); // "Hello, Ada!"
+const wb = new Workbook();
+wb.setCell("A1", 10);
+wb.setCell("A2", 32);
+wb.setCell("A3", "=SUM(A1:A2)");
+wb.setCell("B1", '=IF(A3>40,"big","small")');
+console.log(wb.getValue("A3")); // 42
+console.log(wb.getValue("B1")); // big
 
-try {
-  greet("   ");
-} catch (error) {
-  console.error((error as Error).message); // "name must not be empty"
-}
+// Changing an input recalculates only the cells that depend on it.
+console.log(wb.setCell("A1", 20).evaluated); // [ 'A3', 'B1' ]
+console.log(wb.getValue("A3")); // 52
+
+// Circular references and formula errors come back as Excel-style codes.
+wb.setCell("C1", "=C2+1");
+wb.setCell("C2", "=C1+1");
+console.log(wb.getValue("C1")); // #CIRC!
+console.log(wb.getCycle("C1")); // [ 'C2', 'C1' ]
+wb.setCell("D1", "=1/0");
+console.log(isCellError(wb.getValue("D1"))); // true
+
+// Custom functions join the built-in registry.
+wb.registerFunction("DOUBLE", (x) => (x as number) * 2);
+wb.setCell("D2", "=DOUBLE(A2)");
+console.log(wb.getValue("D2")); // 64
 ```
+
+`test/entry.test.ts` covers the same calls through the package entry point.
 
 ## API
 
 | Export | Signature | Description |
 |---|---|---|
-| `greet` | `(name: string) => string` | Placeholder API; replace it with the real one. |
+| `Workbook` | `new Workbook(opts?: WorkbookOptions)` | In-memory sheet: `setCell`, `getValue`, `getDependents`, `getCycle`, `recalculate`, `registerFunction`, `toJSON`, `loadJSON`. |
+| `isCellError` | `(value: unknown) => value is CellError` | True for cell error values such as `#DIV/0!` and `#CIRC!`. |
+| `FormulaError` | class | Thrown by `setCell` for invalid formulas and exceeded limits; `code` is a `FormulaErrorCode` such as `SYNTAX_ERROR`. |
+| `CellValue`, `CellError`, `FormulaErrorCode` | types | Cell contents, cell error values (`#DIV/0!`, `#N/A`, `#REF!`, `#VALUE!`, `#NAME?`, `#NUM!`, `#CIRC!`) and thrown error codes. |
+| `IWorkbook`, `WorkbookOptions`, `SetCellResult`, `RecalculateResult` | types | The workbook contract, its options and the result of a change. |
+| `greet` | `(name: string) => string` | Template helper kept for compatibility; not part of the engine. |
 
 ## Development
 
