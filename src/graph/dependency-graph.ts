@@ -1,30 +1,8 @@
 import type { IDependencyGraph, RecalculationPlan } from "../../interfaces/graph.js";
+import { FormulaError, type FormulaErrorCode } from "../parser/types.js";
 
-/**
- * Primitive cell error and status codes.
- */
-export type FormulaErrorCode =
-  | "FORMULA_TOO_LONG"
-  | "EXPRESSION_TOO_DEEP"
-  | "CELL_LIMIT_EXCEEDED"
-  | "SYNTAX_ERROR"
-  | "CIRCULAR_REFERENCE"
-  | "UNKNOWN_FUNCTION";
-
-/**
- * Typed error for formula engine operations.
- */
-export class FormulaError extends Error {
-  readonly code: FormulaErrorCode;
-
-  constructor(code: FormulaErrorCode, message?: string) {
-    super(message ?? code);
-    this.name = "FormulaError";
-    this.code = code;
-  }
-}
-
-export type { IDependencyGraph, RecalculationPlan };
+export type { FormulaErrorCode, IDependencyGraph, RecalculationPlan };
+export { FormulaError };
 
 /**
  * Configuration options for DependencyGraph.
